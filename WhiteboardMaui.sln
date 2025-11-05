@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36623.8
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhiteboardMaui", "WhiteboardMaui\WhiteboardMaui.csproj", "{AAE71C8B-BC5B-4859-BE5E-A2B6611AFFE4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhiteboardMaui.Core", "WhiteboardMaui.Core\WhiteboardMaui.Core.csproj", "{23C712E1-653A-4861-93AA-F60C79915698}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AAE71C8B-BC5B-4859-BE5E-A2B6611AFFE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAE71C8B-BC5B-4859-BE5E-A2B6611AFFE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAE71C8B-BC5B-4859-BE5E-A2B6611AFFE4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AAE71C8B-BC5B-4859-BE5E-A2B6611AFFE4}.Debug|x64.Build.0 = Debug|Any CPU
+		{AAE71C8B-BC5B-4859-BE5E-A2B6611AFFE4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AAE71C8B-BC5B-4859-BE5E-A2B6611AFFE4}.Debug|x86.Build.0 = Debug|Any CPU
+		{AAE71C8B-BC5B-4859-BE5E-A2B6611AFFE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAE71C8B-BC5B-4859-BE5E-A2B6611AFFE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAE71C8B-BC5B-4859-BE5E-A2B6611AFFE4}.Release|x64.ActiveCfg = Release|Any CPU
+		{AAE71C8B-BC5B-4859-BE5E-A2B6611AFFE4}.Release|x64.Build.0 = Release|Any CPU
+		{AAE71C8B-BC5B-4859-BE5E-A2B6611AFFE4}.Release|x86.ActiveCfg = Release|Any CPU
+		{AAE71C8B-BC5B-4859-BE5E-A2B6611AFFE4}.Release|x86.Build.0 = Release|Any CPU
+		{23C712E1-653A-4861-93AA-F60C79915698}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23C712E1-653A-4861-93AA-F60C79915698}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23C712E1-653A-4861-93AA-F60C79915698}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{23C712E1-653A-4861-93AA-F60C79915698}.Debug|x64.Build.0 = Debug|Any CPU
+		{23C712E1-653A-4861-93AA-F60C79915698}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{23C712E1-653A-4861-93AA-F60C79915698}.Debug|x86.Build.0 = Debug|Any CPU
+		{23C712E1-653A-4861-93AA-F60C79915698}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23C712E1-653A-4861-93AA-F60C79915698}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23C712E1-653A-4861-93AA-F60C79915698}.Release|x64.ActiveCfg = Release|Any CPU
+		{23C712E1-653A-4861-93AA-F60C79915698}.Release|x64.Build.0 = Release|Any CPU
+		{23C712E1-653A-4861-93AA-F60C79915698}.Release|x86.ActiveCfg = Release|Any CPU
+		{23C712E1-653A-4861-93AA-F60C79915698}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {84C07693-101B-4754-A6A7-9AC3CD9F5317}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:controls="clr-namespace:WhiteboardMaui.Core.Controls;assembly=WhiteboardMaui.Core"
+             x:Class="WhiteboardMaui.MainPage"
+             Title="Whiteboard">
+
+    <Grid RowDefinitions="Auto,*">
+        <ScrollView Grid.Row="0" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" BackgroundColor="#F5F5F5">
+            <HorizontalStackLayout Padding="12" Spacing="10" HeightRequest="70">
+                <Label Text="Colors:" VerticalOptions="Center" FontAttributes="Bold" FontSize="14" Margin="0,0,8,0" TextColor="#333"/>
+
+                <Border x:Name="BlackButton"
+                        BackgroundColor="Black"
+                        WidthRequest="44" HeightRequest="44"
+                        StrokeShape="RoundRectangle 22"
+                        StrokeThickness="3"
+                        Stroke="Transparent">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.3" Radius="4" Offset="0,2"/>
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnColorSelected"/>
+                    </Border.GestureRecognizers>
+                </Border>
+
+                <Border x:Name="NavyButton"
+                        BackgroundColor="Navy"
+                        WidthRequest="44" HeightRequest="44"
+                        StrokeShape="RoundRectangle 22"
+                        StrokeThickness="3"
+                        Stroke="Transparent">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.3" Radius="4" Offset="0,2"/>
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnColorSelected"/>
+                    </Border.GestureRecognizers>
+                </Border>
+
+                <Border x:Name="MaroonButton"
+                        BackgroundColor="Maroon"
+                        WidthRequest="44" HeightRequest="44"
+                        StrokeShape="RoundRectangle 22"
+                        StrokeThickness="3"
+                        Stroke="Transparent">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.3" Radius="4" Offset="0,2"/>
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnColorSelected"/>
+                    </Border.GestureRecognizers>
+                </Border>
+
+                <Border x:Name="ForestGreenButton"
+                        BackgroundColor="ForestGreen"
+                        WidthRequest="44" HeightRequest="44"
+                        StrokeShape="RoundRectangle 22"
+                        StrokeThickness="3"
+                        Stroke="Transparent">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.3" Radius="4" Offset="0,2"/>
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnColorSelected"/>
+                    </Border.GestureRecognizers>
+                </Border>
+
+                <Border x:Name="OrangeButton"
+                        BackgroundColor="Orange"
+                        WidthRequest="44" HeightRequest="44"
+                        StrokeShape="RoundRectangle 22"
+                        StrokeThickness="3"
+                        Stroke="Transparent">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.3" Radius="4" Offset="0,2"/>
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnColorSelected"/>
+                    </Border.GestureRecognizers>
+                </Border>
+
+                <BoxView WidthRequest="2" BackgroundColor="#DDD" Margin="8,10"/>
+                <Label Text="Thickness:" VerticalOptions="Center" FontAttributes="Bold" FontSize="14" Margin="0,0,8,0" TextColor="#333"/>
+
+                <Button x:Name="ThinButton"
+                        Text="Thin"
+                        WidthRequest="70"
+                        HeightRequest="40"
+                        BackgroundColor="White"
+                        TextColor="#333"
+                        BorderColor="#DDD"
+                        BorderWidth="1"
+                        CornerRadius="20"
+                        FontSize="13"
+                        Clicked="OnThicknessSelected"/>
+
+                <Button x:Name="MediumButton"
+                        Text="Medium"
+                        WidthRequest="75"
+                        HeightRequest="40"
+                        BackgroundColor="White"
+                        TextColor="#333"
+                        BorderColor="#DDD"
+                        BorderWidth="1"
+                        CornerRadius="20"
+                        FontSize="13"
+                        Clicked="OnThicknessSelected"/>
+
+                <Button x:Name="ThickButton"
+                        Text="Thick"
+                        WidthRequest="70"
+                        HeightRequest="40"
+                        BackgroundColor="White"
+                        TextColor="#333"
+                        BorderColor="#DDD"
+                        BorderWidth="1"
+                        CornerRadius="20"
+                        FontSize="13"
+                        Clicked="OnThicknessSelected"/>
+
+                <BoxView WidthRequest="2" BackgroundColor="#DDD" Margin="8,10"/>
+                <Label Text="Actions:" VerticalOptions="Center" FontAttributes="Bold" FontSize="14" Margin="0,0,8,0" TextColor="#333"/>
+
+                <Border x:Name="UndoButton"
+                        BackgroundColor="#E0E0E0"
+                        WidthRequest="44"
+                        HeightRequest="44"
+                        StrokeShape="RoundRectangle 22"
+                        StrokeThickness="0">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.2" Radius="3" Offset="0,1"/>
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnUndoClicked"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="↶"
+                           FontSize="24"
+                           TextColor="#424242"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           FontAttributes="Bold"/>
+                </Border>
+
+                <Border x:Name="RedoButton"
+                        BackgroundColor="#E0E0E0"
+                        WidthRequest="44"
+                        HeightRequest="44"
+                        StrokeShape="RoundRectangle 22"
+                        StrokeThickness="0">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.2" Radius="3" Offset="0,1"/>
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRedoClicked"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="↷"
+                           FontSize="24"
+                           TextColor="#424242"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           FontAttributes="Bold"/>
+                </Border>
+
+                <Border x:Name="ClearButton"
+                        BackgroundColor="#FFE5E5"
+                        WidthRequest="44"
+                        HeightRequest="44"
+                        StrokeShape="RoundRectangle 22"
+                        StrokeThickness="0">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.2" Radius="3" Offset="0,1"/>
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnClearClicked"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="🗑"
+                           FontSize="20"
+                           TextColor="#D32F2F"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                </Border>
+
+                <Border x:Name="SaveButton"
+                        BackgroundColor="#E8F5E9"
+                        WidthRequest="44"
+                        HeightRequest="44"
+                        StrokeShape="RoundRectangle 22"
+                        StrokeThickness="0">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.2" Radius="3" Offset="0,1"/>
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSaveClicked"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="💾"
+                           FontSize="20"
+                           TextColor="#388E3C"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                </Border>
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <controls:WhiteboardCanvas x:Name="WhiteboardCanvas"
+                                   Grid.Row="1"
+                                   LineColor="Black"
+                                   LineWidth="5"
+                                   LineDrawn="OnLineDrawn"
+                                   CanvasCleared="OnCanvasCleared"
+                                   UndoRedoStateChanged="OnUndoRedoStateChanged"
+                                   DrawingSaved="OnDrawingSaved"/>
+    </Grid>
+
+</ContentPage>
