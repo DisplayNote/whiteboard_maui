@@ -1,0 +1,137 @@
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - WhiteboardMaui.Core/*
+    - WhiteboardMaui/*
+
+variables:
+  buildConfiguration: 'Release'
+  majorVersion: '1'
+  minorVersion: '0'
+  patchVersion: $[counter('NuGet_version_counter', 0)]
+  packageVersion: '$(majorVersion).$(minorVersion).$(patchVersion)'
+  nugetFeedName: 'displaynote-net-feeds'
+  targetFramework: 'net9.0-windows10.0.26100.0'
+  whiteboardMauiCoreProjectPath: 'WhiteboardMaui.Core/WhiteboardMaui.Core.csproj'
+  buildOutputPath: 'bin/$(buildConfiguration)/$(targetFramework)/'
+
+pool:
+  name: 'agent-pool-windows2025-vmss'
+
+stages:
+- stage: Build
+  displayName: 'Build and Package'
+  jobs:
+  - job: Build
+    displayName: 'Build WhiteboardMaui.Core (Windows Only)'
+    steps:
+
+    - checkout: self
+      lfs: true
+
+    - task: UseDotNet@2
+      displayName: 'Install .NET 9 SDK'
+      inputs:
+        packageType: 'sdk'
+        version: '9.x'
+
+    - task: NuGetToolInstaller@0
+      displayName: 'NuGet: Get version 6.13.2'
+      inputs:
+        versionSpec: '6.13.2'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Install MAUI workloads'
+      inputs:
+        command: 'custom'
+        custom: 'workload'
+        arguments: 'install maui android --source https://api.nuget.org/v3/index.json'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore packages'
+      inputs:
+        command: 'restore'
+        projects: '$(whiteboardMauiCoreProjectPath)'
+        arguments: '--framework $(targetFramework)'
+
+    - task: MSBuild@1
+      displayName: 'Build project'
+      inputs:
+        solution: '$(whiteboardMauiCoreProjectPath)'
+        configuration: '$(buildConfiguration)'
+        platform: 'x64'
+        msbuildArguments: '/p:TargetFramework=$(targetFramework) /p:Version=$(packageVersion) /p:OutputPath="$(buildOutputPath)"'
+
+    - task: TrustedSigning@0
+      displayName: Sign with Trusted Signing
+      inputs:
+        AzureTenantID: '$(TENANT_ID)'
+        AzureClientID: '$(SIGN_CLIENT_ID)'
+        AzureClientSecret: '$(SIGN_CLIENT_SECRET)'
+        Endpoint: 'https://weu.codesigning.azure.net/'
+        TrustedSigningAccountName: 'acc-dn-codesign-pro'
+        CertificateProfileName: 'profile-dn-codesign-pro'
+        FilesFolder: '$(system.defaultworkingdirectory)\WhiteboardMaui.Core\$(buildOutputPath)'
+        FilesFolderFilter: 'dll'
+        FilesFolderRecurse: true
+        FileDigest: 'SHA256'
+        TimestampRfc3161: 'http://timestamp.acs.microsoft.com'
+        TimestampDigest: 'SHA256'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Create NuGet package'
+      inputs:
+        command: 'pack'
+        packagesToPack: '$(whiteboardMauiCoreProjectPath)'
+        configuration: $(buildConfiguration)
+        outputDir: '$(Build.ArtifactStagingDirectory)'
+        nobuild: true
+        includeSymbols: true
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: 'packageVersion'
+        buildProperties: 'TargetFrameworks=$(targetFramework)'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish artifacts'
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: 'packages'
+
+    - task: GitHubRelease@1
+      displayName: 'GitHub Release'
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+      inputs:
+        gitHubConnection: 'DisplayNote'
+        repositoryName: '$(Build.Repository.Name)'
+        action: 'create'
+        target: '$(Build.SourceVersion)'
+        tagSource: 'userSpecifiedTag'
+        tag: 'nuget_$(packageVersion)'
+        title: 'NuGet Package $(packageVersion) Release'
+        assets: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+
+- stage: PublishToFeed
+  displayName: 'Publish to Private Feed'
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  jobs:
+  - job: PublishToFeed
+    displayName: 'Publish NuGet Package to Private Feed'
+    steps:
+        
+    - download: current
+      artifact: 'packages'
+
+    - task: NuGetAuthenticate@1
+      displayName: 'Authenticate with feed'
+
+    - task: NuGetCommand@2
+      displayName: 'Push to private feed'
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Pipeline.Workspace)/packages/WhiteboardMaui.Core.$(packageVersion).nupkg'
+        nuGetFeedType: 'internal'
+        publishVstsFeed: '$(nugetFeedName)'
