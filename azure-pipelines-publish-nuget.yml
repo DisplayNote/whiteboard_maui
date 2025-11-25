@@ -104,7 +104,7 @@ stages:
       displayName: 'GitHub Release'
       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
       inputs:
-        gitHubConnection: 'DisplayNote'
+        gitHubConnection: 'github connection 1'
         repositoryName: '$(Build.Repository.Name)'
         action: 'create'
         target: '$(Build.SourceVersion)'
