@@ -90,7 +90,7 @@ stages:
         includeSymbols: true
         versioningScheme: 'byEnvVar'
         versionEnvVar: 'packageVersion'
-        buildProperties: 'TargetFrameworks=$(targetFrameworks)'
+        buildProperties: 'TargetFrameworks="$(targetFrameworks)"'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish artifacts'
