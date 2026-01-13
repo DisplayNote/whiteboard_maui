@@ -72,7 +72,7 @@ stages:
         Endpoint: 'https://weu.codesigning.azure.net/'
         TrustedSigningAccountName: 'acc-dn-codesign-pro'
         CertificateProfileName: 'profile-dn-codesign-pro'
-        FilesFolder: '$(system.defaultworkingdirectory)\WhiteboardMaui.Core\$(buildOutputPath)**'
+        FilesFolder: '$(system.defaultworkingdirectory)\WhiteboardMaui.Core\bin\$(buildConfiguration)'
         FilesFolderFilter: 'dll'
         FilesFolderRecurse: true
         FileDigest: 'SHA256'
