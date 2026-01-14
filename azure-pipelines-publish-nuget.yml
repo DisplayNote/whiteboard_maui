@@ -14,9 +14,9 @@ variables:
   patchVersion: $[counter('NuGet_version_counter', 0)]
   packageVersion: '$(majorVersion).$(minorVersion).$(patchVersion)'
   nugetFeedName: 'displaynote-net-feeds'
-  targetFramework: 'net9.0-windows10.0.26100.0'
+  targetFrameworks: 'net9.0-android;net9.0-windows10.0.26100.0'
   whiteboardMauiCoreProjectPath: 'WhiteboardMaui.Core/WhiteboardMaui.Core.csproj'
-  buildOutputPath: 'bin/$(buildConfiguration)/$(targetFramework)/'
+  buildOutputPath: 'bin/$(buildConfiguration)/'
 
 pool:
   name: 'agent-pool-windows2025-vmss'
@@ -26,7 +26,7 @@ stages:
   displayName: 'Build and Package'
   jobs:
   - job: Build
-    displayName: 'Build WhiteboardMaui.Core (Windows Only)'
+    displayName: 'Build WhiteboardMaui.Core (Multi-Platform)'
     steps:
 
     - checkout: self
@@ -55,15 +55,13 @@ stages:
       inputs:
         command: 'restore'
         projects: '$(whiteboardMauiCoreProjectPath)'
-        arguments: '--framework $(targetFramework)'
 
     - task: MSBuild@1
       displayName: 'Build project'
       inputs:
         solution: '$(whiteboardMauiCoreProjectPath)'
         configuration: '$(buildConfiguration)'
-        platform: 'x64'
-        msbuildArguments: '/p:TargetFramework=$(targetFramework) /p:Version=$(packageVersion) /p:OutputPath="$(buildOutputPath)"'
+        msbuildArguments: '/p:Version=$(packageVersion)'
 
     - task: TrustedSigning@0
       displayName: Sign with Trusted Signing
@@ -74,7 +72,7 @@ stages:
         Endpoint: 'https://weu.codesigning.azure.net/'
         TrustedSigningAccountName: 'acc-dn-codesign-pro'
         CertificateProfileName: 'profile-dn-codesign-pro'
-        FilesFolder: '$(system.defaultworkingdirectory)\WhiteboardMaui.Core\$(buildOutputPath)'
+        FilesFolder: '$(system.defaultworkingdirectory)\WhiteboardMaui.Core\bin\$(buildConfiguration)'
         FilesFolderFilter: 'dll'
         FilesFolderRecurse: true
         FileDigest: 'SHA256'
@@ -92,7 +90,7 @@ stages:
         includeSymbols: true
         versioningScheme: 'byEnvVar'
         versionEnvVar: 'packageVersion'
-        buildProperties: 'TargetFrameworks=$(targetFramework)'
+        buildProperties: 'TargetFrameworks="$(targetFrameworks)"'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish artifacts'
