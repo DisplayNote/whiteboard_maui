@@ -199,7 +199,20 @@ namespace WhiteboardMaui
                 var contentValues = new Android.Content.ContentValues();
                 contentValues.Put(Android.Provider.MediaStore.IMediaColumns.DisplayName, filename);
                 contentValues.Put(Android.Provider.MediaStore.IMediaColumns.MimeType, "image/jpeg");
-                contentValues.Put(Android.Provider.MediaStore.IMediaColumns.RelativePath, Android.OS.Environment.DirectoryPictures);
+
+                // Check Android version
+                if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.Q)
+                {
+                    // Android 10+ (API 29+)
+                    contentValues.Put(Android.Provider.MediaStore.IMediaColumns.RelativePath, Android.OS.Environment.DirectoryPictures);
+                }
+                else
+                {
+                    // Android 9 and below: use DATA column and save to Pictures directory
+                    var picturesDir = Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryPictures)?.AbsolutePath;
+                    var filePath = System.IO.Path.Combine(picturesDir, filename);
+                    contentValues.Put(Android.Provider.MediaStore.Images.ImageColumns.Data, filePath);
+                }
 
                 var uri = resolver.Insert(externalContentUri, contentValues);
                 if (uri == null)
