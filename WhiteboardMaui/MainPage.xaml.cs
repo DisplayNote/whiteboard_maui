@@ -134,6 +134,14 @@ namespace WhiteboardMaui
         {
             try
             {
+#if ANDROID
+                if (!await EnsureStoragePermissionAsync())
+                {
+                    await DisplayAlert("Error", "Storage permission is required to save drawings.", "OK");
+                    return;
+                }
+#endif
+
                 if (WhiteboardCanvas.LineCount == 0)
                 {
                     await DisplayAlert("Info", "Nothing to save! Please draw something first.", "OK");
@@ -142,34 +150,93 @@ namespace WhiteboardMaui
 
                 var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
                 var filename = $"Whiteboard_{timestamp}.jpg";
-                string targetPath;
+                string? targetPath;
 
 #if ANDROID
-                var picturesPath = Android.OS.Environment.GetExternalStoragePublicDirectory(
-                    Android.OS.Environment.DirectoryPictures)?.AbsolutePath;
-
-                if (string.IsNullOrEmpty(picturesPath))
-                    picturesPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-                targetPath = Path.Combine(picturesPath, filename);
+                targetPath = await SaveImageToGalleryAsync(filename);
+                if (targetPath == null)
+                    throw new Exception("Failed to save image to gallery.");
 #elif IOS || MACCATALYST
                 var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 targetPath = Path.Combine(documentsPath, filename);
+                await WhiteboardCanvas.SaveAsync(targetPath);
 #elif WINDOWS
                 var picturesPath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
                 targetPath = Path.Combine(picturesPath, filename);
+                await WhiteboardCanvas.SaveAsync(targetPath);
 #else
                 var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 targetPath = Path.Combine(documentsPath, filename);
-#endif
-
                 await WhiteboardCanvas.SaveAsync(targetPath);
+#endif
             }
             catch (Exception ex)
             {
                 await DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
             }
         }
+
+#if ANDROID
+        async Task<bool> EnsureStoragePermissionAsync()
+        {
+            var status = await Permissions.CheckStatusAsync<Permissions.StorageWrite>();
+            if (status != PermissionStatus.Granted)
+            {
+                status = await Permissions.RequestAsync<Permissions.StorageWrite>();
+            }
+            return status == PermissionStatus.Granted;
+        }
+
+        private async Task<string?> SaveImageToGalleryAsync(string filename)
+        {
+            try
+            {
+                var resolver = Android.App.Application.Context.ContentResolver;
+                if (resolver == null)
+                {
+                    await DisplayAlert("Error", "ContentResolver is null", "OK");
+                    return null;
+                }
+
+                var externalContentUri = Android.Provider.MediaStore.Images.Media.ExternalContentUri;
+                if (externalContentUri == null)
+                {
+                    await DisplayAlert("Error", "ExternalContentUri is null", "OK");
+                    return null;
+                }
+
+                var contentValues = new Android.Content.ContentValues();
+                contentValues.Put(Android.Provider.MediaStore.IMediaColumns.DisplayName, filename);
+                contentValues.Put(Android.Provider.MediaStore.IMediaColumns.MimeType, "image/jpeg");
+                contentValues.Put(Android.Provider.MediaStore.IMediaColumns.RelativePath, Android.OS.Environment.DirectoryPictures);
+
+                var uri = resolver.Insert(externalContentUri, contentValues);
+                if (uri == null)
+                {
+                    await DisplayAlert("Error", "Failed to create new MediaStore record.", "OK");
+                    return null;
+                }
+
+                using (var stream = resolver.OpenOutputStream(uri))
+                {
+                    if (stream == null)
+                    {
+                        await DisplayAlert("Error", "Failed to get output stream.", "OK");
+                        return null;
+                    }
+
+                    await WhiteboardCanvas.SaveAsync(stream, uri.ToString());
+                }
+
+                return uri.ToString();
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
+                return null;
+            }
+        }
+#endif
 
         #endregion
     }

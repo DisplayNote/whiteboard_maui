@@ -1,6 +1,5 @@
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Views;
-using System.Collections.ObjectModel;
 using WhiteboardMaui.Core.Models;
 
 namespace WhiteboardMaui.Core.Controls
@@ -213,6 +212,47 @@ namespace WhiteboardMaui.Core.Controls
             catch (Exception ex)
             {
                 DrawingSaved?.Invoke(this, new DrawingSavedEventArgs(filePath, false, ex.Message));
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Save the drawing as an image
+        /// </summary>
+        /// <param name="fileStream">Stream to the file</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>True if save was successful</returns>
+        public async Task<bool> SaveAsync(Stream fileStream, string fileFullPath, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (_drawingView.Lines.Count == 0)
+                {
+                    DrawingSaved?.Invoke(this, new DrawingSavedEventArgs(fileFullPath, false, "Nothing to save"));
+                    return false;
+                }
+
+                var stream = await _drawingView.GetImageStream(
+                    (int)_drawingView.Width,
+                    (int)_drawingView.Height,
+                    cancellationToken);
+
+                if (stream != null)
+                {
+                    stream.Seek(0, SeekOrigin.Begin);
+                    await stream.CopyToAsync(fileStream, cancellationToken);
+
+                    stream.Dispose();
+                    DrawingSaved?.Invoke(this, new DrawingSavedEventArgs(fileFullPath, true));
+                    return true;
+                }
+
+                DrawingSaved?.Invoke(this, new DrawingSavedEventArgs(fileFullPath, false, "Failed to generate image stream"));
+                return false;
+            }
+            catch (Exception ex)
+            {
+                DrawingSaved?.Invoke(this, new DrawingSavedEventArgs(fileFullPath, false, ex.Message));
                 return false;
             }
         }
