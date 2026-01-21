@@ -40,7 +40,7 @@ namespace WhiteboardMaui
                 if (e.Success)
                 {
                     await DisplayAlert("Success",
-                        $"Drawing saved to:\n{e.FilePath}\n\nWould you like to share it?",
+                        $"Drawing saved to:\n{e.FilePath}",
                         "Done");
                 }
                 else
