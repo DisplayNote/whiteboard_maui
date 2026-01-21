@@ -39,18 +39,9 @@ namespace WhiteboardMaui
             {
                 if (e.Success)
                 {
-                    var share = await DisplayAlert("Success",
+                    await DisplayAlert("Success",
                         $"Drawing saved to:\n{e.FilePath}\n\nWould you like to share it?",
-                        "Share", "Done");
-
-                    if (share)
-                    {
-                        await Share.Default.RequestAsync(new ShareFileRequest
-                        {
-                            Title = "Share Whiteboard Drawing",
-                            File = new ShareFile(e.FilePath)
-                        });
-                    }
+                        "Done");
                 }
                 else
                 {
