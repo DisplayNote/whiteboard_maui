@@ -183,14 +183,7 @@ namespace WhiteboardMaui.Core.Controls
                     return false;
                 }
 
-                var bg = Colors.White.AsPaint();
-                using var stream = await DrawingViewService.GetImageStream(
-                    ImageLineOptions.FullCanvas(
-                        [.. _drawingView.Lines],
-                        new Size((int)_drawingView.Width, (int)_drawingView.Height),
-                        bg,
-                        new Size(_drawingView.Width, _drawingView.Height)),
-                    cancellationToken);
+                using var stream = await GetImageStreamAsync(cancellationToken);
 
                 if (stream != null)
                 {
@@ -234,14 +227,7 @@ namespace WhiteboardMaui.Core.Controls
                     return false;
                 }
 
-                var bg = Colors.White.AsPaint();
-                using var stream = await DrawingViewService.GetImageStream(
-                    ImageLineOptions.FullCanvas(
-                        [.. _drawingView.Lines],
-                        new Size((int)_drawingView.Width, (int)_drawingView.Height),
-                        bg,
-                        new Size(_drawingView.Width, _drawingView.Height)),
-                    cancellationToken);
+                using var stream = await GetImageStreamAsync(cancellationToken);
 
                 if (stream != null)
                 {
@@ -280,6 +266,23 @@ namespace WhiteboardMaui.Core.Controls
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Creates an image stream from the current drawing lines
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Stream containing the image data, or null if failed</returns>
+        private async Task<Stream?> GetImageStreamAsync(CancellationToken cancellationToken = default)
+        {
+            var bg = Colors.White.AsPaint();
+            return await DrawingViewService.GetImageStream(
+                ImageLineOptions.FullCanvas(
+                    [.. _drawingView.Lines],
+                    new Size((int)_drawingView.Width, (int)_drawingView.Height),
+                    bg,
+                    new Size(_drawingView.Width, _drawingView.Height)),
+                cancellationToken);
+        }
 
         private void NotifyUndoRedoStateChanged()
         {
