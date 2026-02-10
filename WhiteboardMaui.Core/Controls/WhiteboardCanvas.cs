@@ -1,4 +1,5 @@
 using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Core.Views;
 using CommunityToolkit.Maui.Views;
 using WhiteboardMaui.Core.Models;
 
@@ -182,10 +183,7 @@ namespace WhiteboardMaui.Core.Controls
                     return false;
                 }
 
-                var stream = await _drawingView.GetImageStream(
-                    (int)_drawingView.Width,
-                    (int)_drawingView.Height,
-                    cancellationToken);
+                using var stream = await GetImageStreamAsync(cancellationToken);
 
                 if (stream != null)
                 {
@@ -195,13 +193,10 @@ namespace WhiteboardMaui.Core.Controls
                         Directory.CreateDirectory(directory);
                     }
 
-                    using (var fileStream = File.Create(filePath))
-                    {
-                        stream.Seek(0, SeekOrigin.Begin);
-                        await stream.CopyToAsync(fileStream, cancellationToken);
-                    }
+                    using var fileStream = File.Create(filePath);
+                    stream.Seek(0, SeekOrigin.Begin);
+                    await stream.CopyToAsync(fileStream, cancellationToken);
 
-                    stream.Dispose();
                     DrawingSaved?.Invoke(this, new DrawingSavedEventArgs(filePath, true));
                     return true;
                 }
@@ -232,17 +227,13 @@ namespace WhiteboardMaui.Core.Controls
                     return false;
                 }
 
-                var stream = await _drawingView.GetImageStream(
-                    (int)_drawingView.Width,
-                    (int)_drawingView.Height,
-                    cancellationToken);
+                using var stream = await GetImageStreamAsync(cancellationToken);
 
                 if (stream != null)
                 {
                     stream.Seek(0, SeekOrigin.Begin);
                     await stream.CopyToAsync(fileStream, cancellationToken);
 
-                    stream.Dispose();
                     DrawingSaved?.Invoke(this, new DrawingSavedEventArgs(fileFullPath, true));
                     return true;
                 }
@@ -275,6 +266,23 @@ namespace WhiteboardMaui.Core.Controls
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Creates an image stream from the current drawing lines
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Stream containing the image data, or null if failed</returns>
+        private async Task<Stream?> GetImageStreamAsync(CancellationToken cancellationToken = default)
+        {
+            var bg = Colors.White.AsPaint();
+            return await DrawingViewService.GetImageStream(
+                ImageLineOptions.FullCanvas(
+                    [.. _drawingView.Lines],
+                    new Size((int)_drawingView.Width, (int)_drawingView.Height),
+                    bg,
+                    new Size(_drawingView.Width, _drawingView.Height)),
+                cancellationToken);
+        }
 
         private void NotifyUndoRedoStateChanged()
         {
